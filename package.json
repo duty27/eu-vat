@@ -1,0 +1,64 @@
+{
+  "name": "@duty27/eu-vat",
+  "version": "0.1.0",
+  "description": "EU standard VAT rates by date: every change since 2016, for all 27 member states. Zero dependencies, works offline in Node and the browser.",
+  "keywords": [
+    "vat",
+    "eu",
+    "tax",
+    "vat-rate",
+    "vat-rates",
+    "european-union",
+    "oss",
+    "reverse-charge",
+    "typescript"
+  ],
+  "homepage": "https://duty27.com/vat-rates/history",
+  "bugs": "https://github.com/duty27/eu-vat/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duty27/eu-vat.git"
+  },
+  "license": "MIT",
+  "author": "Duty27 (https://duty27.com)",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "DATA-LICENSE.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/postbuild.mjs",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "data:update": "node scripts/update-data.mjs",
+    "data:check": "node scripts/update-data.mjs --check",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

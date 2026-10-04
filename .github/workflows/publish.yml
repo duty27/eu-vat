@@ -1,0 +1,38 @@
+name: Publish
+
+# Publishes to npm when a version tag is pushed (git tag v0.1.1 && git push --tags), using npm "trusted
+# publishing": GitHub proves to npm which repository and workflow this is, so there is NO npm token stored
+# anywhere, and the package page shows a verified "built from this commit" provenance badge.
+#
+# One-time setup on npmjs.com, after the first release (which is done by hand): the package's Settings,
+# "Trusted Publisher", GitHub Actions, organization "duty27", repository "eu-vat", workflow "publish.yml".
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write # lets the job prove its identity to npm
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - name: The tag must match the version in package.json
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag v$TAG does not match package.json version $VERSION"
+            exit 1
+          fi
+      - run: npm test
+      - run: npm publish --provenance --access public
