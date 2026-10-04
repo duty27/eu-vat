@@ -8,6 +8,7 @@ dependencies that work offline.
 | Node and the browser (TypeScript) | [`@duty27/eu-vat`](node/) | `npm install @duty27/eu-vat` | 0.1.0, built and tested, not yet released |
 | Python 3.9+ | [`duty27-eu-vat`](python/) | `pip install duty27-eu-vat` | 0.1.0, built and tested, not yet released |
 | Java 11+ | [`com.duty27:eu-vat`](java/) | Maven or Gradle, see [java/](java/) | 0.1.0, built and tested, not yet released |
+| AI assistants (MCP server) | [`@duty27/eu-vat-mcp`](mcp/) | `claude mcp add eu-vat -- npx -y @duty27/eu-vat-mcp` | 0.1.0, built and tested, not yet released |
 
 ```js
 import { getStandardRate } from '@duty27/eu-vat';
@@ -41,16 +42,16 @@ git sparse-checkout set python        # or node, or java
 git checkout main
 ```
 
-## How the three stay identical
+## How they stay identical
 
 One file, [`data/eu-standard-vat-rates.json`](data/eu-standard-vat-rates.json), is the source. `./build.sh` turns it into each
 language's data module and a shared set of expected answers (`test-vectors.csv`, worked out by a plain scan of the
-data, not by any library), then builds and tests all three, and finishes by checking that all three carry the same
-source hash.
+data, not by any library), then builds and tests all three libraries and the MCP server (which bundles the Node library's data), and finishes by
+checking that every one of them carries the same source hash.
 
 ```sh
-./build.sh            # regenerate the data, then build and test node, python and java
-./build.sh java       # one language
+./build.sh            # regenerate the data, then build and test node, python, java and the MCP server
+./build.sh java       # one language (or node, python, mcp)
 ./build.sh refresh    # fetch the published rates and update the snapshot
 ./build.sh check      # fail if the published rates changed, or a generated file was edited by hand
 ```

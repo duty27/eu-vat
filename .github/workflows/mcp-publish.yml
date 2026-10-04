@@ -1,0 +1,44 @@
+name: MCP publish
+
+# Publishes @duty27/eu-vat-mcp to npm when a tag like mcp-v0.1.1 is pushed (git tag mcp-v0.1.1 && git push --tags;
+# the mcp- prefix leaves room for the node-, python- and java- releases from the same repo), using npm "trusted
+# publishing": GitHub proves to npm which repository and workflow this is, so there is NO npm token stored
+# anywhere, and the package page shows a verified "built from this commit" provenance badge.
+#
+# One-time setup on npmjs.com, after the first release (which is done by hand): the package's Settings,
+# "Trusted Publisher", GitHub Actions, organization "duty27", repository "eu-vat", workflow "mcp-publish.yml".
+on:
+  push:
+    tags: ["mcp-v*"]
+
+permissions:
+  contents: read
+  id-token: write # lets the job prove its identity to npm
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: mcp/package-lock.json
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - name: The tag must match the version in package.json
+        run: |
+          TAG="${GITHUB_REF_NAME#mcp-v}"
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag mcp-v$TAG does not match mcp/package.json version $VERSION"
+            exit 1
+          fi
+      - run: npm test
+      - run: npm publish --provenance --access public

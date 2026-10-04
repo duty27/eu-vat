@@ -4,7 +4,7 @@
 //   node/src/data.ts                                   the Node library's data
 //   python/src/duty27_eu_vat/_data.py                  the Python library's data
 //   java/src/main/java/com/duty27/euvat/Data.java      the Java library's data
-//   node/test/, python/tests/, java/src/test/resources/ test-vectors.csv
+//   node/test/, python/tests/, java/src/test/resources/, mcp/test/ test-vectors.csv
 //                                                      expected answers, one identical copy per language so
 //                                                      each folder's tests need nothing from outside it
 //
@@ -48,6 +48,7 @@ function outputs(snapshot) {
     [join(ROOT, 'node', 'test', 'test-vectors.csv'), vectors],
     [join(ROOT, 'python', 'tests', 'test-vectors.csv'), vectors],
     [join(ROOT, 'java', 'src', 'test', 'resources', 'test-vectors.csv'), vectors],
+    [join(ROOT, 'mcp', 'test', 'test-vectors.csv'), vectors],
   ];
 }
 

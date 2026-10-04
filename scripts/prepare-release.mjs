@@ -10,7 +10,7 @@
 // If they differ, it:
 //   1. validates the published file (a bad file is rejected before anything is written),
 //   2. updates the snapshot, then regenerates every library's data through scripts/sync-data.mjs (one code path),
-//   3. gives node, python and java the SAME new version (they are released together from one data source),
+//   3. gives node, python, java and mcp the SAME new version (they are released together from one data source),
 //   4. adds an entry to CHANGELOG.md and writes the notes for the pull request (RELEASE_NOTES, default release-notes.md),
 //   5. reports changed=true and version=<new> through GITHUB_OUTPUT, for the workflow.
 //
@@ -27,6 +27,8 @@ const SNAPSHOT = join(ROOT, 'data', 'eu-standard-vat-rates.json');
 const FILES = {
   nodePkg: join(ROOT, 'node', 'package.json'),
   nodeLock: join(ROOT, 'node', 'package-lock.json'),
+  mcpPkg: join(ROOT, 'mcp', 'package.json'),
+  mcpLock: join(ROOT, 'mcp', 'package-lock.json'),
   python: join(ROOT, 'python', 'pyproject.toml'),
   java: join(ROOT, 'java', 'pom.xml'),
   changelog: join(ROOT, 'CHANGELOG.md'),
@@ -81,6 +83,8 @@ function currentVersions() {
     node: JSON.parse(readFileSync(FILES.nodePkg, 'utf-8')).version,
     lock: lock.version,
     lockRoot: lock.packages?.['']?.version,
+    mcp: JSON.parse(readFileSync(FILES.mcpPkg, 'utf-8')).version,
+    mcpLock: JSON.parse(readFileSync(FILES.mcpLock, 'utf-8')).packages?.['']?.version,
     python: PY_VERSION.exec(readFileSync(FILES.python, 'utf-8'))?.[2],
     java: POM_VERSION.exec(readFileSync(FILES.java, 'utf-8'))?.[2],
   };
@@ -95,6 +99,11 @@ function writeVersions(next) {
   lock.version = next;
   lock.packages[''].version = next;
   writeFileSync(FILES.nodeLock, JSON.stringify(lock, null, 2) + '\n');
+  writeFileSync(FILES.mcpPkg, readFileSync(FILES.mcpPkg, 'utf-8').replace(/("version":\s*")[^"]+(")/, `$1${next}$2`));
+  const mcpLock = JSON.parse(readFileSync(FILES.mcpLock, 'utf-8'));
+  mcpLock.version = next;
+  mcpLock.packages[''].version = next;
+  writeFileSync(FILES.mcpLock, JSON.stringify(mcpLock, null, 2) + '\n');
   writeFileSync(FILES.python, readFileSync(FILES.python, 'utf-8').replace(PY_VERSION, `$1${next}$3`));
   writeFileSync(FILES.java, readFileSync(FILES.java, 'utf-8').replace(POM_VERSION, `$1${next}$3`));
 }
@@ -116,10 +125,10 @@ function releaseNotes(version, asOf, lines) {
     `- [ ] Verify each change above against a primary source (the European Commission's TEDB or the national tax authority). A rate change is a claim about the law.\n` +
     `- [ ] CI is green: node, python and java all passed, and all three carry the same source hash.\n\n` +
     `## After merging\n\n` +
-    `Nothing is published by merging. To release, push the three tags (each starts its own publish workflow):\n\n` +
+    `Nothing is published by merging. To release, push the four tags (each starts its own publish workflow):\n\n` +
     '```\n' +
-    `git tag node-v${version} python-v${version} java-v${version}\n` +
-    `git push origin node-v${version} python-v${version} java-v${version}\n` +
+    `git tag node-v${version} python-v${version} java-v${version} mcp-v${version}\n` +
+    `git push origin node-v${version} python-v${version} java-v${version} mcp-v${version}\n` +
     '```\n';
 }
 

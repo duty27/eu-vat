@@ -1,0 +1,31 @@
+{
+  "name": "@duty27/eu-vat-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for EU standard VAT rates by date: ask an AI assistant what the VAT rate was in any of the 27 member states on any day since 2016. Offline, no API key.",
+  "keywords": ["mcp", "model-context-protocol", "mcp-server", "vat", "eu-vat", "vat-rate", "historical-vat-rates", "value-added-tax", "tax", "european-union", "claude", "ai"],
+  "homepage": "https://duty27.com/vat-rates/history",
+  "bugs": "https://github.com/duty27/eu-vat/issues",
+  "repository": { "type": "git", "url": "git+https://github.com/duty27/eu-vat.git", "directory": "mcp" },
+  "license": "MIT",
+  "author": "Duty27 (https://duty27.com)",
+  "type": "module",
+  "bin": { "eu-vat-mcp": "./dist/server.js" },
+  "files": ["dist", "README.md", "LICENSE", "DATA-LICENSE.md"],
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "rm -rf dist && node scripts/build.mjs",
+    "test": "npm run typecheck && npm run build && node --test test/*.test.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.9.3"
+  }
+}

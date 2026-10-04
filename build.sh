@@ -12,13 +12,14 @@
 #   ./build.sh python          data, then Python only      (tests on the source, build wheel and sdist, twine check,
 #                              then install the wheel alone into a clean virtualenv and test THAT)
 #   ./build.sh java            data, then Java only        (mvn verify: compile for Java 11, tests, jar)
+#   ./build.sh mcp             data, then the MCP server   (typecheck, bundle the Node library into one file, tests over stdio)
 #   ./build.sh data            only regenerate the data modules from the committed snapshot (works offline)
 #   ./build.sh refresh         fetch the published rates, validate them, update the snapshot, regenerate everything
 #   ./build.sh check           change nothing: fail if the published rates differ from the snapshot (a rate changed)
 #                              or if any generated file is not exactly what the snapshot produces
 #   ./build.sh clean           remove build output
 #
-# Needs: node (22 or later), plus python3 (3.9 or later) for python, plus a JDK (11 or later) and Maven for java.
+# Needs: node (22 or later; the MCP server needs npm too), plus python3 (3.9 or later) for python, plus a JDK (11 or later) and Maven for java.
 # Environment: PYTHON=python3.12 picks the Python used to build; the Python tests also run on it.
 set -euo pipefail
 
@@ -90,6 +91,14 @@ verify_same_source() {
     die "the libraries were NOT built from the same data (node ${ts:0:16}, python ${py:0:16}, java ${java:0:16}). Run ./build.sh data."
   fi
   ok "node, python and java all carry source hash ${ts:0:16}"
+  # The MCP server bundles the Node library's data into one file. Check that file too, but only when this run built
+  # it (an old dist/ from an earlier build would prove nothing).
+  if [ "${MCP_BUILT:-0}" = 1 ]; then
+    local mcp; mcp="$(sed -n 's/.*DATA_SOURCE_SHA256 = "\([0-9a-f]*\)".*/\1/p' mcp/dist/server.js | head -1)"
+    [ -n "$mcp" ] || die "could not read the source hash from mcp/dist/server.js"
+    [ "$mcp" = "$ts" ] || die "the MCP server bundle carries different data (${mcp:0:16}) than the libraries (${ts:0:16})."
+    ok "the MCP server bundle carries the same hash"
+  fi
 }
 
 # Change nothing; report whether the data is current and consistent.
@@ -138,11 +147,19 @@ build_java() {
   run "java: mvn verify" bash -c "cd java && mvn -B verify"
 }
 
+build_mcp() {
+  need node mcp; need npm mcp
+  step "MCP server: install, typecheck, bundle the Node library into one file, test over stdio"
+  run "mcp: npm ci"   npm --prefix mcp ci --no-audit --no-fund
+  run "mcp: npm test" npm --prefix mcp test
+  MCP_BUILT=1
+}
+
 clean_all() {
   step "Clean: remove build output"
-  rm -rf node/dist node/node_modules python/dist python/build java/target
+  rm -rf node/dist node/node_modules mcp/dist mcp/node_modules python/dist python/build java/target
   find python -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
-  ok "removed node/dist, node/node_modules, python/dist, python/build, java/target"
+  ok "removed node/dist, node/node_modules, mcp/dist, mcp/node_modules, python/dist, python/build, java/target"
 }
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -150,11 +167,12 @@ clean_all() {
 # ---------------------------------------------------------------------------------------------------------------
 
 case "${1:-all}" in
-  all)     build_data; build_node; build_python; build_java; verify_same_source
-           printf '\n\033[32mAll three libraries built and tested from one data source.\033[0m\n' ;;
+  all)     build_data; build_node; build_python; build_java; build_mcp; verify_same_source
+           printf '\n\033[32mAll three libraries and the MCP server built and tested from one data source.\033[0m\n' ;;
   node)    build_data; build_node;   verify_same_source ;;
   python)  build_data; build_python; verify_same_source ;;
   java)    build_data; build_java;   verify_same_source ;;
+  mcp)     build_data; build_mcp;    verify_same_source ;;
   data)    build_data; verify_same_source ;;
   refresh) refresh_data; verify_same_source ;;
   check)   check_data ;;
