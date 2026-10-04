@@ -38,3 +38,13 @@ test('licence terms: MIT code, CC BY 4.0 data, and a homepage that points at the
   assert.match(readFileSync(new URL('../DATA-LICENSE.md', import.meta.url), 'utf-8'), /CC BY 4\.0|Attribution 4\.0/);
   assert.strictEqual(pkg.homepage, 'https://duty27.com/vat-rates/history');
 });
+
+test('the package keywords include the phrases people search for dated and historical rates', () => {
+  // npm search matches keywords as well as the name and description; "historical" and "by date" are what separate this
+  // package from the libraries that only return today's rate.
+  for (const k of ['vat-rates', 'eu-vat-rates', 'historical-vat-rates', 'vat-rate-history', 'value-added-tax']) {
+    assert.ok(pkg.keywords.includes(k), `missing keyword ${k}`);
+  }
+  assert.strictEqual(new Set(pkg.keywords).size, pkg.keywords.length, 'duplicate keyword');
+  assert.ok(pkg.keywords.length <= 15, `too many keywords (${pkg.keywords.length}): npm search rewards relevance, not volume`);
+});

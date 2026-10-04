@@ -13,7 +13,7 @@ requires-python = ">=3.9"
 license = "MIT"
 license-files = ["LICENSE", "DATA-LICENSE.md"]
 authors = [{ name = "Duty27" }]
-keywords = ["vat", "eu", "tax", "vat-rate", "european-union", "oss", "reverse-charge"]
+keywords = ["vat", "eu-vat", "eu-vat-rates", "vat-rate", "vat-rates", "historical-vat-rates", "vat-rate-history", "value-added-tax", "tax", "european-union", "oss", "reverse-charge"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
