@@ -1,0 +1,44 @@
+# Packaging for duty27-eu-vat (import name: duty27_eu_vat). Pure Python, no dependencies.
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duty27-eu-vat"
+version = "0.1.0"
+description = "EU standard VAT rates by date: every change since 2016, for all 27 member states. No dependencies, works offline."
+readme = "README.md"
+requires-python = ">=3.9"
+# The code is MIT. The bundled rate data is CC BY 4.0 (DATA-LICENSE.md); both files ship in the package.
+license = "MIT"
+license-files = ["LICENSE", "DATA-LICENSE.md"]
+authors = [{ name = "Duty27" }]
+keywords = ["vat", "eu", "tax", "vat-rate", "european-union", "oss", "reverse-charge"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Office/Business :: Financial",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://duty27.com/vat-rates/history"
+Documentation = "https://duty27.com/docs"
+Repository = "https://github.com/duty27/eu-vat"
+Issues = "https://github.com/duty27/eu-vat/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/duty27_eu_vat"]
+
+# The tests read the shared expected answers from ../data, which is outside this folder, so they live in the
+# repository only and are not shipped in the source distribution.
+[tool.hatch.build.targets.sdist]
+include = ["src", "README.md", "LICENSE", "DATA-LICENSE.md", "pyproject.toml"]

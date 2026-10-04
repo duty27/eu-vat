@@ -1,0 +1,333 @@
+{
+  "title": "EU standard VAT rates, 2016 to present",
+  "description": "The standard VAT rate in force in each of the 27 EU member states, as a list of the dates a rate began to apply. Standard rates only; reduced rates are not included.",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "attribution": "Duty27 (https://duty27.com/vat-rates/history)",
+  "source": "Compiled from the European Commission TEDB service and cross-checked against the Commission's historical VAT rate tables and national sources.",
+  "note": "Country codes are the EU member state codes (Greece is EL). A window runs from its effective date until the next one.",
+  "countries": [
+    {
+      "code": "AT",
+      "country": "Austria",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        }
+      ]
+    },
+    {
+      "code": "BE",
+      "country": "Belgium",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "BG",
+      "country": "Bulgaria",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        }
+      ]
+    },
+    {
+      "code": "HR",
+      "country": "Croatia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 25
+        }
+      ]
+    },
+    {
+      "code": "CY",
+      "country": "Cyprus",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 19
+        }
+      ]
+    },
+    {
+      "code": "CZ",
+      "country": "Czechia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "DK",
+      "country": "Denmark",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 25
+        }
+      ]
+    },
+    {
+      "code": "EE",
+      "country": "Estonia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        },
+        {
+          "from": "2024-01-01",
+          "rate": 22
+        },
+        {
+          "from": "2025-07-01",
+          "rate": 24
+        }
+      ]
+    },
+    {
+      "code": "FI",
+      "country": "Finland",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 24
+        },
+        {
+          "from": "2024-09-01",
+          "rate": 25.5
+        }
+      ]
+    },
+    {
+      "code": "FR",
+      "country": "France",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        }
+      ]
+    },
+    {
+      "code": "DE",
+      "country": "Germany",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 19
+        },
+        {
+          "from": "2020-07-01",
+          "rate": 16
+        },
+        {
+          "from": "2021-01-01",
+          "rate": 19
+        }
+      ]
+    },
+    {
+      "code": "EL",
+      "country": "Greece",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 23
+        },
+        {
+          "from": "2016-06-01",
+          "rate": 24
+        }
+      ]
+    },
+    {
+      "code": "HU",
+      "country": "Hungary",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 27
+        }
+      ]
+    },
+    {
+      "code": "IE",
+      "country": "Ireland",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 23
+        },
+        {
+          "from": "2020-09-01",
+          "rate": 21
+        },
+        {
+          "from": "2021-03-01",
+          "rate": 23
+        }
+      ]
+    },
+    {
+      "code": "IT",
+      "country": "Italy",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 22
+        }
+      ]
+    },
+    {
+      "code": "LV",
+      "country": "Latvia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "LT",
+      "country": "Lithuania",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "LU",
+      "country": "Luxembourg",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 17
+        },
+        {
+          "from": "2023-01-01",
+          "rate": 16
+        },
+        {
+          "from": "2024-01-01",
+          "rate": 17
+        }
+      ]
+    },
+    {
+      "code": "MT",
+      "country": "Malta",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 18
+        }
+      ]
+    },
+    {
+      "code": "NL",
+      "country": "Netherlands",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "PL",
+      "country": "Poland",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 23
+        }
+      ]
+    },
+    {
+      "code": "PT",
+      "country": "Portugal",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 23
+        }
+      ]
+    },
+    {
+      "code": "RO",
+      "country": "Romania",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        },
+        {
+          "from": "2017-01-01",
+          "rate": 19
+        },
+        {
+          "from": "2025-08-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "SK",
+      "country": "Slovakia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 20
+        },
+        {
+          "from": "2025-01-01",
+          "rate": 23
+        }
+      ]
+    },
+    {
+      "code": "SI",
+      "country": "Slovenia",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 22
+        }
+      ]
+    },
+    {
+      "code": "ES",
+      "country": "Spain",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 21
+        }
+      ]
+    },
+    {
+      "code": "SE",
+      "country": "Sweden",
+      "windows": [
+        {
+          "from": "2016-01-01",
+          "rate": 25
+        }
+      ]
+    }
+  ],
+  "snapshotAsOf": "2026-10-04"
+}

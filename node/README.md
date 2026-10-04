@@ -81,6 +81,12 @@ calculations a month, no credit card).
   [the €10,000 threshold](https://duty27.com/oss-threshold)
 - Reduced-rate categories (e-books, newspapers, periodicals) are available through the API.
 
+## Working on it
+
+This folder is self-contained: `npm ci && npm test` builds the ESM and CommonJS outputs and runs the tests. The rate
+data in `src/data.ts` and the test file `test/test-vectors.csv` are generated from the shared source at the
+repository root (`./build.sh data`), not edited by hand.
+
 ## Licence
 
 - Code: [MIT](LICENSE).

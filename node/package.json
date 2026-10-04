@@ -55,8 +55,6 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/postbuild.mjs",
     "test": "npm run build && node --test test/*.test.mjs",
-    "data:update": "node scripts/update-data.mjs",
-    "data:check": "node scripts/update-data.mjs --check",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {

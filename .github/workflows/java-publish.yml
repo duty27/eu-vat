@@ -1,0 +1,53 @@
+name: Java publish
+
+# Publishes com.duty27:eu-vat to Maven Central when a tag like java-v0.1.1 is pushed (git tag java-v0.1.1 && git push --tags).
+# UNTESTED until the one-time setup below is done: Maven Central has no token-free publishing, so it needs secrets.
+#
+# One-time setup (Maven Central, via the Central Portal at central.sonatype.com):
+#   1. Verify the namespace com.duty27: Portal, Namespaces, add com.duty27, then add the DNS TXT record it asks for
+#      to duty27.com (you control that zone).
+#   2. Create a user token in the Portal (Account, Generate User Token).
+#   3. Create a GPG key to sign releases, and publish its PUBLIC key to a keyserver (keys.openpgp.org).
+#   4. Add four repository secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (the Portal token),
+#      MAVEN_GPG_PRIVATE_KEY (armored private key) and MAVEN_GPG_PASSPHRASE.
+# The pom's "release" profile builds the sources and Javadoc jars, signs, and uploads; autoPublish is off, so the
+# upload waits in the Portal for you to review it and click Publish.
+on:
+  push:
+    tags: ["java-v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: java
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: The tag must match the version in pom.xml
+        run: |
+          TAG="${GITHUB_REF_NAME#java-v}"
+          VERSION="$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag java-v$TAG does not match java/pom.xml version $VERSION"
+            exit 1
+          fi
+      - run: mvn -B verify
+      - run: mvn -B -Prelease deploy -DskipTests
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

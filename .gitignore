@@ -1,3 +1,22 @@
+# Build output and caches for all three languages. None of it belongs in the repository.
+
+# Node
 node_modules/
 dist/
 *.tgz
+
+# Python
+__pycache__/
+*.pyc
+build/
+*.egg-info/
+.venv/
+
+# Java
+target/
+
+# Editors and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store

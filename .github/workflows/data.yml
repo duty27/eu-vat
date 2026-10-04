@@ -1,0 +1,28 @@
+name: Data
+
+# The rate data for all three libraries is generated from ONE file, data/eu-standard-vat-rates.json. This fails if
+# a generated file was edited by hand, or the snapshot was changed without regenerating: running the generator
+# must change nothing. It also runs the validator and generator tests, and checks that node, python and java all
+# carry the same source hash.
+on:
+  push:
+    branches: [main]
+    paths: ["data/**", "scripts/**", "node/src/data.ts", "node/test/test-vectors.csv", "python/src/duty27_eu_vat/_data.py", "python/tests/test-vectors.csv", "java/src/main/java/com/duty27/euvat/Data.java", "java/src/test/resources/test-vectors.csv", "build.sh", ".github/workflows/data.yml"]
+  pull_request:
+    paths: ["data/**", "scripts/**", "node/src/data.ts", "node/test/test-vectors.csv", "python/src/duty27_eu_vat/_data.py", "python/tests/test-vectors.csv", "java/src/main/java/com/duty27/euvat/Data.java", "java/src/test/resources/test-vectors.csv", "build.sh", ".github/workflows/data.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - run: ./build.sh data
+      # Regenerating produced no difference: every generated file was already exactly what the snapshot gives.
+      - name: Generated files are committed and unedited
+        run: git diff --exit-code

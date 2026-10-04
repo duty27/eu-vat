@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Build file for com.duty27:eu-vat. Plain Java, no runtime dependencies. Java 11 or later.
+
+  Everyday use:    mvn verify                 compile, run the tests, build the jar
+  Releasing:       mvn -Prelease deploy       also builds the sources and Javadoc jars, signs everything with GPG and
+                                              uploads to Maven Central (needs the credentials described in the
+                                              java-publish workflow). The "release" profile is kept separate so
+                                              nobody needs a GPG key just to build or test.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.duty27</groupId>
+  <artifactId>eu-vat</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+
+  <name>eu-vat</name>
+  <description>EU standard VAT rates by date: every change since 2016, for all 27 member states. No dependencies, works offline.</description>
+  <url>https://duty27.com/vat-rates/history</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>Duty27</name>
+    <url>https://duty27.com</url>
+  </organization>
+  <developers>
+    <developer>
+      <name>Duty27</name>
+      <organization>Duty27</organization>
+      <organizationUrl>https://duty27.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/duty27/eu-vat.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/duty27/eu-vat.git</developerConnection>
+    <url>https://github.com/duty27/eu-vat</url>
+  </scm>
+
+  <properties>
+    <!-- The compiler's release option (rather than separate source and target options) also checks the code against the
+         Java 11 class library, so the jar cannot accidentally depend on an API newer than Java 11. -->
+    <maven.compiler.release>11</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Same bytes for the same source, so a rebuild produces an identical jar. -->
+    <project.build.outputTimestamp>2026-10-04T00:00:00Z</project.build.outputTimestamp>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.11.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+      </plugin>
+      <plugin>
+        <!-- The license files travel inside the jar, as the licences ask. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <!-- Lets other modular code use this jar by a stable name without a module-info of our own. -->
+              <Automatic-Module-Name>com.duty27.euvat</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>${project.basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>LICENSE</include>
+          <include>DATA-LICENSE.md</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <!-- Maven Central requires a sources jar and a Javadoc jar, and every artifact signed. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions><execution><id>attach-sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+            <configuration><doclint>all,-missing</doclint></configuration>
+            <executions><execution><id>attach-javadocs</id><goals><goal>jar</goal></goals></execution></executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+                <configuration>
+                  <!-- In CI the key's passphrase is supplied to gpg directly, with no prompt. -->
+                  <gpgArguments><arg>--pinentry-mode</arg><arg>loopback</arg></gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <!-- Publishes to Maven Central through the Central Portal (credentials: server id "central" in settings.xml). -->
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.6.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>false</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
