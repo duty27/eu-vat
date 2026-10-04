@@ -22,9 +22,10 @@ get_standard_rate("DE", "2020-07-01")  # Decimal('16')
 EuVat.getStandardRate("DE", "2020-07-01");   // 16
 ```
 
-All three give identical answers and are built from the same dataset, which Duty27 publishes with its sources at
+All three give identical answers (so does the MCP server) and are built from the same dataset, which Duty27 publishes at
 https://duty27.com/vat-rates/history, as CSV and JSON at https://duty27.com/data/eu-standard-vat-rates.json. It covers
-**standard rates only**; reduced rates are not included. This is information, not tax advice.
+**standard rates only**; reduced rates are not included. It looks rates up; it does not calculate tax. This is
+information, not tax advice.
 
 For deciding what to charge (B2B reverse charge, the EU €10,000 threshold, VIES checks) and keeping the proof
 (archive and OSS reports), see the [Duty27 API](https://duty27.com/docs), which is free to try.

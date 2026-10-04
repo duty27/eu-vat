@@ -39,11 +39,18 @@ All four are read-only and make no network calls.
 ## What it will not do
 
 - **Standard rates only.** Reduced rates (e-books, food, ...) are not included.
+- **Lookup, not calculation.** It returns the rate. It does not work out net or gross amounts, rounding, whether a sale is
+  reverse-charged, or OSS reports: those are in the Duty27 API.
 - **Nothing is guessed.** An unknown country, a date before 2016-01-01 or a malformed date is returned as an error the
   assistant can read, never a plausible-looking wrong rate.
 - **It is a snapshot.** Every answer says when the data was last checked (`dataAsOf`). A rate that changed after that
   date appears in the next release. A pull request that updates the data opens automatically when Duty27's published
   rates change, and is released after a person checks it against the primary source.
+
+## Need more than a rate?
+
+Deciding what to charge and keeping the proof (B2B reverse charge, the EU €10,000 threshold, VIES checks, an archive and
+OSS reports) is what the [Duty27 API](https://duty27.com/docs) does. It is free to try, no credit card.
 
 ## Same data as the libraries
 

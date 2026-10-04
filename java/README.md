@@ -68,12 +68,14 @@ method on immutable data, so it is safe to use from any number of threads.
 ## What it covers, and what it does not
 
 - **Standard rates only.** Reduced rates (for example e-books, newspapers and periodicals) are not included.
+- **Lookup, not calculation.** It returns the rate. It does not work out net or gross amounts, rounding, whether a
+  sale is reverse-charged, or OSS reports: those are in the Duty27 API (see below).
 - **27 EU member states, from 2016-01-01.**
 - **The data has an age.** `dataAsOf()` is the date it was last compared with the rates Duty27 publishes. A rate
   that changed after that date will not be here until a new version is released. For anything that must be
   right today, check the source, or use the API below.
 - The rates are compiled from the European Commission's TEDB service and cross-checked against the
-  Commission's own historical rate tables and national sources. The dataset, with its sources, is at
+  Commission's own historical rate tables and national sources. The dataset is at
   https://duty27.com/vat-rates/history, and the same data is available there as CSV and JSON.
 
 This library provides standard VAT rate data for information. It is not tax advice.
