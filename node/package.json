@@ -17,7 +17,8 @@
   "bugs": "https://github.com/duty27/eu-vat/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duty27/eu-vat.git"
+    "url": "git+https://github.com/duty27/eu-vat.git",
+    "directory": "node"
   },
   "license": "MIT",
   "author": "Duty27 (https://duty27.com)",

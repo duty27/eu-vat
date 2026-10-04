@@ -1,9 +1,11 @@
-name: CI
+name: Node CI
 
 on:
   push:
     branches: [main]
+    paths: ["node/**", ".github/workflows/node-ci.yml"]
   pull_request:
+    paths: ["node/**", ".github/workflows/node-ci.yml"]
 
 permissions:
   contents: read
@@ -11,6 +13,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +25,8 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: node/package-lock.json
       - run: npm ci
       # Builds the ESM and CommonJS outputs, then runs the tests against them, including installing the
       # package by name and checking what the published tarball contains.

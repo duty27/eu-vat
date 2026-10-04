@@ -1,8 +1,8 @@
-name: Data freshness
+name: Node data freshness
 
 # The rates in this package are generated from the file Duty27 publishes at
 # https://duty27.com/data/eu-standard-vat-rates.json. If that file changes (a rate changed), this fails, and
-# GitHub emails the repository owner: time to run `npm run data:update`, review the diff and release.
+# GitHub emails the repository owner: time to run `npm run data:update` in node/, review the diff and release.
 on:
   schedule:
     - cron: "17 6 * * 1" # Mondays 06:17 UTC
@@ -14,10 +14,15 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: node/package-lock.json
       - run: npm ci
       - run: npm run data:check
