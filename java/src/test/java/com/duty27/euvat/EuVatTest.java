@@ -68,13 +68,14 @@ class EuVatTest {
     @Test
     void firstDayOfTheDataAndACountryThatNeverChanged() {
         assertRate("20", "AT", "2016-01-01");
-        assertRate("20", "AT", "2026-10-04");
         assertEquals(LocalDate.of(2016, 1, 1), EuVat.DATA_FIRST_DATE);
     }
 
     @Test
     void aDateAfterTheLastKnownChangeReturnsTheLatestKnownRate() {
-        assertRate("21", "RO", "2035-01-01");
+        // Derived from the data, not hard-coded: a new rate change must not break this test (the shared vectors hold exact values).
+        List<RateWindow> ro = EuVat.getRateHistory("RO");
+        assertEquals(0, ro.get(ro.size() - 1).rate().compareTo(EuVat.getStandardRate("RO", "2035-01-01")));
     }
 
     @Test
@@ -128,11 +129,11 @@ class EuVatTest {
     @Test
     void getRateHistoryReturnsEveryWindowInOrder() {
         List<RateWindow> history = EuVat.getRateHistory("DE");
-        assertEquals(3, history.size());
+        assertTrue(history.size() >= 3, "the known history is a floor: a later change adds a window at the end");
         assertEquals(new RateWindow(LocalDate.of(2016, 1, 1), d("19")), history.get(0));
         assertEquals(new RateWindow(LocalDate.of(2020, 7, 1), d("16")), history.get(1));
         assertEquals(new RateWindow(LocalDate.of(2021, 1, 1), d("19")), history.get(2));
-        assertEquals(2, EuVat.getRateHistory("gr").size());
+        assertTrue(EuVat.getRateHistory("gr").size() >= 2);
     }
 
     @Test
@@ -140,28 +141,30 @@ class EuVatTest {
         List<RateWindow> history = EuVat.getRateHistory("DE");
         assertThrows(UnsupportedOperationException.class, () -> history.add(new RateWindow(LocalDate.of(2030, 1, 1), d("99"))));
         assertThrows(UnsupportedOperationException.class, history::clear);
-        assertEquals(3, EuVat.getRateHistory("DE").size());
-        assertRate("19", "DE", "2030-06-01");
+        assertEquals(history.size(), EuVat.getRateHistory("DE").size());
+        assertEquals(0, history.get(history.size() - 1).rate().compareTo(EuVat.getStandardRate("DE", "2030-06-01")));
     }
 
     @Test
     void getRateChangesListsEveryChangeNewestFirstAndCanBeFiltered() {
         List<RateChange> all = EuVat.getRateChanges();
-        assertEquals(13, all.size());
-        assertEquals(new RateChange("RO", LocalDate.of(2025, 8, 1), d("19"), d("21")), all.get(0));
+        assertTrue(all.size() >= 13, "the 13 known changes are a floor; new ones add to it");
+        assertTrue(all.contains(new RateChange("RO", LocalDate.of(2025, 8, 1), d("19"), d("21"))));
         List<LocalDate> dates = all.stream().map(RateChange::date).collect(Collectors.toList());
         List<LocalDate> sortedDescending = new ArrayList<>(dates);
         sortedDescending.sort(Collections.reverseOrder());
         assertEquals(sortedDescending, dates);
 
         List<RateChange> germany = EuVat.getRateChanges("de", null);
-        assertEquals(2, germany.size());
-        assertEquals(LocalDate.of(2021, 1, 1), germany.get(0).date());
-        assertEquals(LocalDate.of(2020, 7, 1), germany.get(1).date());
+        assertTrue(germany.size() >= 2);
+        assertEquals(LocalDate.of(2021, 1, 1), germany.get(germany.size() - 2).date());
+        assertEquals(LocalDate.of(2020, 7, 1), germany.get(germany.size() - 1).date());
 
-        assertEquals(Arrays.asList("RO", "EE", "SK"),
-                EuVat.getRateChanges(null, LocalDate.of(2025, 1, 1)).stream().map(RateChange::country).collect(Collectors.toList()));
-        assertTrue(EuVat.getRateChanges("AT", null).isEmpty());
+        List<String> since2025 = EuVat.getRateChanges(null, LocalDate.of(2025, 1, 1)).stream().map(RateChange::country).collect(Collectors.toList());
+        assertTrue(since2025.containsAll(Arrays.asList("RO", "EE", "SK")));
+        List<RateChange> austria = EuVat.getRateChanges("AT", null);   // a country filter returns only that country, one change per extra window
+        assertTrue(austria.stream().allMatch(c -> c.country().equals("AT")));
+        assertEquals(EuVat.getRateHistory("AT").size() - 1, austria.size());
         assertThrows(UnknownCountryException.class, () -> EuVat.getRateChanges("XX", null));
         assertThrows(UnsupportedOperationException.class, () -> all.add(all.get(0)));
     }

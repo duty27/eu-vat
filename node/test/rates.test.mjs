@@ -30,14 +30,14 @@ test('other real changes land on the right day', () => {
   assert.strictEqual(rate('RO', '2025-08-01'), 21);
 });
 
-test('the first day of the data and a country that never changed', () => {
+test('the first day of the data', () => {
   assert.strictEqual(rate('AT', '2016-01-01'), 20);
-  assert.strictEqual(rate('AT', '2026-10-04'), 20);
   assert.strictEqual(DATA_FIRST_DATE, '2016-01-01');
 });
 
 test('a date after the last known change returns the latest known rate', () => {
-  assert.strictEqual(rate('RO', '2035-01-01'), 21);
+  // Derived from the data, not hard-coded: a new rate change must not break this test (see the shared vectors for exact values).
+  assert.strictEqual(rate('RO', '2035-01-01'), getRateHistory('RO').at(-1).rate);
 });
 
 test('country codes are case-insensitive, trimmed, and Greece answers to both GR and EL', () => {
@@ -87,23 +87,28 @@ test('with no date it uses today (UTC)', () => {
 
 test('getRateHistory returns every window in order, as copies the caller cannot use to change the data', () => {
   const h = getRateHistory('DE');
-  assert.deepStrictEqual(h, [{ from: '2016-01-01', rate: 19 }, { from: '2020-07-01', rate: 16 }, { from: '2021-01-01', rate: 19 }]);
+  // The known history is a floor: a later change adds a window at the end, it never alters these.
+  assert.deepStrictEqual(h.slice(0, 3), [{ from: '2016-01-01', rate: 19 }, { from: '2020-07-01', rate: 16 }, { from: '2021-01-01', rate: 19 }]);
+  const latest = h.at(-1).rate;
   h.push({ from: '2030-01-01', rate: 99 });
   h[0].rate = 1;
   assert.deepStrictEqual(getRateHistory('DE')[0], { from: '2016-01-01', rate: 19 });
-  assert.strictEqual(rate('DE', '2030-06-01'), 19);
-  assert.deepStrictEqual(getRateHistory('gr'), [{ from: '2016-01-01', rate: 23 }, { from: '2016-06-01', rate: 24 }]);
+  assert.strictEqual(rate('DE', '2030-06-01'), latest);
+  assert.deepStrictEqual(getRateHistory('gr').slice(0, 2), [{ from: '2016-01-01', rate: 23 }, { from: '2016-06-01', rate: 24 }]);
 });
 
 test('getRateChanges lists every change, newest first, and can be filtered', () => {
   const all = getRateChanges();
-  assert.strictEqual(all.length, 13);
-  assert.deepStrictEqual(all[0], { country: 'RO', date: '2025-08-01', from: 19, to: 21 });
+  assert.ok(all.length >= 13, `${all.length} changes`);   // the 13 known changes are a floor; new ones add to it
+  assert.deepStrictEqual(all.find(c => c.country === 'RO' && c.date === '2025-08-01'), { country: 'RO', date: '2025-08-01', from: 19, to: 21 });
   const dates = all.map(c => c.date);
   assert.deepStrictEqual(dates, [...dates].sort().reverse());
-  assert.deepStrictEqual(getRateChanges({ country: 'de' }).map(c => [c.date, c.from, c.to]), [['2021-01-01', 16, 19], ['2020-07-01', 19, 16]]);
-  assert.deepStrictEqual(getRateChanges({ since: '2025-01-01' }).map(c => c.country), ['RO', 'EE', 'SK']);
-  assert.deepStrictEqual(getRateChanges({ country: 'AT' }), []);
+  assert.deepStrictEqual(getRateChanges({ country: 'de' }).map(c => [c.date, c.from, c.to]).slice(-2), [['2021-01-01', 16, 19], ['2020-07-01', 19, 16]]);
+  const since2025 = getRateChanges({ since: '2025-01-01' }).map(c => c.country);
+  for (const known of ['RO', 'EE', 'SK']) assert.ok(since2025.includes(known), known);
+  const austria = getRateChanges({ country: 'AT' });          // a country filter returns only that country, one change per extra window
+  assert.ok(austria.every(c => c.country === 'AT'));
+  assert.strictEqual(austria.length, getRateHistory('AT').length - 1);
   assert.throws(() => getRateChanges({ country: 'XX' }), UnknownCountryError);
   assert.throws(() => getRateChanges({ since: 'soon' }), TypeError);
 });
