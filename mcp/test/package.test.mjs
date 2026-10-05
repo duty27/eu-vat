@@ -29,3 +29,16 @@ test('the only runtime dependencies are the MCP SDK and zod, so the library is b
   const pkg = JSON.parse(readFileSync(join(MCP_DIR, 'package.json'), 'utf-8'));
   assert.deepStrictEqual(Object.keys(pkg.dependencies).sort(), ['@modelcontextprotocol/sdk', 'zod']);
 });
+
+test('server.json (the MCP registry entry) names this package and matches its version and mcpName', () => {
+  const pkg = JSON.parse(readFileSync(join(MCP_DIR, 'package.json'), 'utf-8'));
+  const server = JSON.parse(readFileSync(join(MCP_DIR, 'server.json'), 'utf-8'));
+  assert.strictEqual(server.name, pkg.mcpName);
+  assert.match(server.name, /^io\.github\.duty27\//);
+  assert.strictEqual(server.version, pkg.version);
+  assert.strictEqual(server.packages.length, 1);
+  assert.deepStrictEqual(
+    { registryType: server.packages[0].registryType, identifier: server.packages[0].identifier, version: server.packages[0].version, transport: server.packages[0].transport },
+    { registryType: 'npm', identifier: pkg.name, version: pkg.version, transport: { type: 'stdio' } });
+  assert.ok(server.description.length <= 100, `description is ${server.description.length} characters`);
+});

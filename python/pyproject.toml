@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "duty27-eu-vat"
-version = "0.1.0"
+version = "0.1.1"
 description = "EU standard VAT rates by date: every change since 2016, for all 27 member states. No dependencies, works offline."
 readme = "README.md"
 requires-python = ">=3.9"

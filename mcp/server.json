@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.duty27/eu-vat",
+  "title": "EU VAT rates",
+  "description": "Standard VAT rate in any EU member state on any date since 2016. Offline, no API key.",
+  "websiteUrl": "https://duty27.com/vat-rates/history",
+  "repository": {
+    "url": "https://github.com/duty27/eu-vat",
+    "source": "github",
+    "id": "1405895224",
+    "subfolder": "mcp"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@duty27/eu-vat-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

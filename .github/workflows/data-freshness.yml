@@ -59,7 +59,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "$branch"
-          git add -A data node python java CHANGELOG.md
+          git add -A data node python java mcp CHANGELOG.md
           git commit -m "Update EU VAT rate data, release $VERSION"
           git push --force origin "$branch"
           if [ -z "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ]; then

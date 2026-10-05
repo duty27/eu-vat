@@ -14,7 +14,7 @@ const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 function workspace() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'prep-release-'));
   fs.cpSync(path.join(REPO, 'scripts'), path.join(dir, 'scripts'), { recursive: true });
-  for (const f of ['data/eu-standard-vat-rates.json', 'node/package.json', 'node/package-lock.json', 'node/src/data.ts', 'mcp/package.json', 'mcp/package-lock.json', 'python/pyproject.toml', 'java/pom.xml']) {
+  for (const f of ['data/eu-standard-vat-rates.json', 'node/package.json', 'node/package-lock.json', 'node/src/data.ts', 'mcp/package.json', 'mcp/package-lock.json', 'mcp/server.json', 'python/pyproject.toml', 'java/pom.xml']) {
     fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true });
     fs.copyFileSync(path.join(REPO, f), path.join(dir, f));
   }
@@ -30,6 +30,7 @@ function workspace() {
   edit('node/package-lock.json', t => { const l = JSON.parse(t); l.version = '0.1.0'; l.packages[''].version = '0.1.0'; return JSON.stringify(l, null, 2) + '\n'; });
   edit('mcp/package.json', t => t.replace(/("version":\s*")[^"]+(")/, '$10.1.0$2'));
   edit('mcp/package-lock.json', t => { const l = JSON.parse(t); l.version = '0.1.0'; l.packages[''].version = '0.1.0'; return JSON.stringify(l, null, 2) + '\n'; });
+  edit('mcp/server.json', t => { const j = JSON.parse(t); j.version = '0.1.0'; j.packages[0].version = '0.1.0'; return JSON.stringify(j, null, 2) + '\n'; });
   edit('python/pyproject.toml', t => t.replace(/^(version = ")[^"]+(")/m, '$10.1.0$2'));
   edit('java/pom.xml', t => t.replace(/(<artifactId>eu-vat<\/artifactId>\s*<version>)[^<]+(<\/version>)/, '$10.1.0$2'));
   return dir;
@@ -55,6 +56,8 @@ const versionsIn = (dir) => ({
   python: read(dir, 'python/pyproject.toml').match(/^version = "([^"]+)"/m)[1],
   mcp: JSON.parse(read(dir, 'mcp/package.json')).version,
   mcpLock: JSON.parse(read(dir, 'mcp/package-lock.json')).packages[''].version,
+  mcpServer: JSON.parse(read(dir, 'mcp/server.json')).version,
+  mcpServerPkg: JSON.parse(read(dir, 'mcp/server.json')).packages[0].version,
   java: read(dir, 'java/pom.xml').match(/<artifactId>eu-vat<\/artifactId>\s*<version>([^<]+)<\/version>/)[1],
 });
 
@@ -91,7 +94,7 @@ test('a rate changed: the snapshot and all three libraries get it, with the same
   for (const f of ['node/src/data.ts', 'python/src/duty27_eu_vat/_data.py', 'java/src/main/java/com/duty27/euvat/Data.java']) {
     assert.match(read(dir, f), /2026-11-01/, f);
   }
-  assert.deepStrictEqual(versionsIn(dir), { node: '0.1.1', lock: '0.1.1', lockRoot: '0.1.1', mcp: '0.1.1', mcpLock: '0.1.1', python: '0.1.1', java: '0.1.1' });
+  assert.deepStrictEqual(versionsIn(dir), { node: '0.1.1', lock: '0.1.1', lockRoot: '0.1.1', mcp: '0.1.1', mcpLock: '0.1.1', mcpServer: '0.1.1', mcpServerPkg: '0.1.1', python: '0.1.1', java: '0.1.1' });
 });
 
 test('the generated vectors and every data module carry the same new source hash', () => {

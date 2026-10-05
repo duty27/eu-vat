@@ -29,6 +29,7 @@ const FILES = {
   nodeLock: join(ROOT, 'node', 'package-lock.json'),
   mcpPkg: join(ROOT, 'mcp', 'package.json'),
   mcpLock: join(ROOT, 'mcp', 'package-lock.json'),
+  mcpServer: join(ROOT, 'mcp', 'server.json'),
   python: join(ROOT, 'python', 'pyproject.toml'),
   java: join(ROOT, 'java', 'pom.xml'),
   changelog: join(ROOT, 'CHANGELOG.md'),
@@ -85,6 +86,8 @@ function currentVersions() {
     lockRoot: lock.packages?.['']?.version,
     mcp: JSON.parse(readFileSync(FILES.mcpPkg, 'utf-8')).version,
     mcpLock: JSON.parse(readFileSync(FILES.mcpLock, 'utf-8')).packages?.['']?.version,
+    mcpServer: JSON.parse(readFileSync(FILES.mcpServer, 'utf-8')).version,
+    mcpServerPkg: JSON.parse(readFileSync(FILES.mcpServer, 'utf-8')).packages?.[0]?.version,
     python: PY_VERSION.exec(readFileSync(FILES.python, 'utf-8'))?.[2],
     java: POM_VERSION.exec(readFileSync(FILES.java, 'utf-8'))?.[2],
   };
@@ -104,6 +107,11 @@ function writeVersions(next) {
   mcpLock.version = next;
   mcpLock.packages[''].version = next;
   writeFileSync(FILES.mcpLock, JSON.stringify(mcpLock, null, 2) + '\n');
+  // The MCP registry entry carries the version twice (the server and its npm package); both move with the package.
+  const mcpServer = JSON.parse(readFileSync(FILES.mcpServer, 'utf-8'));
+  mcpServer.version = next;
+  mcpServer.packages[0].version = next;
+  writeFileSync(FILES.mcpServer, JSON.stringify(mcpServer, null, 2) + '\n');
   writeFileSync(FILES.python, readFileSync(FILES.python, 'utf-8').replace(PY_VERSION, `$1${next}$3`));
   writeFileSync(FILES.java, readFileSync(FILES.java, 'utf-8').replace(POM_VERSION, `$1${next}$3`));
 }
