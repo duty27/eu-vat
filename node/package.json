@@ -13,7 +13,8 @@
     "value-added-tax",
     "tax",
     "european-union",
-    "vat-rate-by-date", "typescript"
+    "vat-rate-by-date",
+    "typescript"
   ],
   "homepage": "https://duty27.com/vat-rates/history",
   "bugs": "https://github.com/duty27/eu-vat/issues",
