@@ -24,7 +24,8 @@ test('zero runtime dependencies', () => {
 
 test('the published tarball holds the built code, types and licences, and nothing else', () => {
   const out = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], { encoding: 'utf-8' }));
-  const files = out[0].files.map(f => f.path);
+  // npm 11 prints a list, npm 12 an object keyed by package name.
+  const files = (Array.isArray(out) ? out[0] : Object.values(out)[0]).files.map(f => f.path);
   for (const must of ['package.json', 'README.md', 'LICENSE', 'DATA-LICENSE.md', 'dist/esm/index.js', 'dist/esm/index.d.ts', 'dist/cjs/index.js', 'dist/cjs/package.json']) {
     assert.ok(files.includes(must), `missing ${must}`);
   }

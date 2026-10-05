@@ -19,7 +19,9 @@ test('the bin is a runnable script and the package ships only what it should', (
   const server = join(MCP_DIR, 'dist', 'server.js');
   assert.match(readFileSync(server, 'utf-8').split('\n')[0], /^#!\/usr\/bin\/env node/);
   assert.ok(statSync(server).mode & 0o111, 'dist/server.js must be executable');
-  const pack = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: MCP_DIR, encoding: 'utf-8' }))[0];
+  // npm 11 prints a list, npm 12 an object keyed by package name.
+  const packed = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: MCP_DIR, encoding: 'utf-8' }));
+  const pack = Array.isArray(packed) ? packed[0] : Object.values(packed)[0];
   const files = pack.files.map(f => f.path).sort();
   assert.ok(files.includes('dist/server.js') && files.includes('package.json') && files.includes('README.md') && files.includes('LICENSE') && files.includes('DATA-LICENSE.md'), files.join(', '));
   assert.deepStrictEqual(files.filter(f => /^(src|test|scripts)\//.test(f) || f.endsWith('.map') || f.includes('node_modules')), []);

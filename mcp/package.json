@@ -10,7 +10,7 @@
   "license": "MIT",
   "author": "Duty27 (https://duty27.com)",
   "type": "module",
-  "bin": { "eu-vat-mcp": "./dist/server.js" },
+  "bin": { "eu-vat-mcp": "dist/server.js" },
   "files": ["dist", "README.md", "LICENSE", "DATA-LICENSE.md"],
   "engines": { "node": ">=18" },
   "publishConfig": { "access": "public" },
