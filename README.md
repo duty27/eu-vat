@@ -5,10 +5,10 @@ dependencies that work offline.
 
 | Language | Package | Install | Status |
 |---|---|---|---|
-| Node and the browser (TypeScript) | [`@duty27/eu-vat`](node/) | `npm install @duty27/eu-vat` | 0.1.0, built and tested, not yet released |
-| Python 3.9+ | [`duty27-eu-vat`](python/) | `pip install duty27-eu-vat` | 0.1.0, built and tested, not yet released |
-| Java 11+ | [`com.duty27:eu-vat`](java/) | Maven or Gradle, see [java/](java/) | 0.1.0, built and tested, not yet released |
-| AI assistants (MCP server) | [`@duty27/eu-vat-mcp`](mcp/) | `claude mcp add eu-vat -- npx -y @duty27/eu-vat-mcp` | 0.1.0, built and tested, not yet released |
+| Node and the browser (TypeScript) | [`@duty27/eu-vat`](node/) | `npm install @duty27/eu-vat` | [0.1.0 on npm](https://www.npmjs.com/package/@duty27/eu-vat) |
+| Python 3.9+ | [`duty27-eu-vat`](python/) | `pip install duty27-eu-vat` | [0.1.0 on PyPI](https://pypi.org/project/duty27-eu-vat/) |
+| Java 11+ | [`com.duty27:eu-vat`](java/) | Maven or Gradle, see [java/](java/) | [0.1.0 on Maven Central](https://central.sonatype.com/artifact/com.duty27/eu-vat) |
+| AI assistants (MCP server) | [`@duty27/eu-vat-mcp`](mcp/) | `claude mcp add eu-vat -- npx -y @duty27/eu-vat-mcp` | [0.1.0 on npm](https://www.npmjs.com/package/@duty27/eu-vat-mcp) |
 
 ```js
 import { getStandardRate } from '@duty27/eu-vat';
