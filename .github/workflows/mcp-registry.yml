@@ -1,0 +1,45 @@
+name: MCP registry
+
+# Lists the MCP server in the official MCP Registry (registry.modelcontextprotocol.io) as io.github.duty27/eu-vat,
+# from mcp/server.json. Runs after every npm release (called by mcp-publish.yml), and by hand (Actions tab, "Run
+# workflow") to retry a listing without publishing to npm again.
+#
+# github-oidc: the registry trusts GitHub's proof that this job runs in the duty27 organisation, so no token is stored.
+# The registry checks that the npm package's mcpName matches server.json, so the version must already be on npm. A
+# just-published version can take a few minutes to appear there, so the job waits for it first.
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  id-token: write # lets the job prove its identity to the registry
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - name: Wait until npm serves this version
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          for i in $(seq 1 40); do
+            if [ "$(npm view "$NAME@$VERSION" version 2>/dev/null)" = "$VERSION" ]; then echo "$NAME@$VERSION is on npm"; exit 0; fi
+            echo "waiting for $NAME@$VERSION on npm ($i/40)"; sleep 15
+          done
+          echo "$NAME@$VERSION did not appear on npm within 10 minutes"; exit 1
+      # The publisher binary is pinned and its checksum checked.
+      - name: Install mcp-publisher
+        run: |
+          curl -sSfL -o mcp-publisher.tar.gz https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum -c -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+      - run: ./mcp-publisher login github-oidc
+      - run: ./mcp-publisher publish
