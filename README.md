@@ -23,7 +23,9 @@ EuVat.getStandardRate("DE", "2020-07-01");   // 16
 ```
 
 All three give identical answers (so does the MCP server) and are built from the same dataset, which Duty27 publishes at
-https://duty27.com/vat-rates/history, as CSV and JSON at https://duty27.com/data/eu-standard-vat-rates.json. It covers
+https://duty27.com/vat-rates/history, as CSV and JSON at https://duty27.com/data/eu-standard-vat-rates.json. Every
+rate change there cites the law or tax-authority notice that made it, and the 2016 starting rates cite the European
+Commission's rate table; the citations are on that page and in the CSV and JSON, not in the packages. It covers
 **standard rates only**; reduced rates are not included. It looks rates up; it does not calculate tax. This is
 information, not tax advice.
 

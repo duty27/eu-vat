@@ -46,6 +46,9 @@ All four are read-only and make no network calls.
 - **It is a snapshot.** Every answer says when the data was last checked (`dataAsOf`). A rate that changed after that
   date appears in the next release. A pull request that updates the data opens automatically when Duty27's published
   rates change, and is released after a person checks it against the primary source.
+- **The citations are on the web, not in the answers.** Every rate change cites the law or tax-authority notice that
+  made it (the 2016 starting rates cite the European Commission's rate table), listed at
+  https://duty27.com/vat-rates/history.
 
 ## Need more than a rate?
 

@@ -75,8 +75,10 @@ method on immutable data, so it is safe to use from any number of threads.
   that changed after that date will not be here until a new version is released. For anything that must be
   right today, check the source, or use the API below.
 - The rates are compiled from the European Commission's TEDB service and cross-checked against the
-  Commission's own historical rate tables and national sources. The dataset is at
-  https://duty27.com/vat-rates/history, and the same data is available there as CSV and JSON.
+  Commission's own historical rate tables and national sources. Every change since 2016 cites the law or
+  tax-authority notice that made it, and the 2016 starting rates cite the Commission's rate table. The citations are
+  not bundled in this library: they are listed at https://duty27.com/vat-rates/history, and the CSV and JSON there
+  carry them for every row.
 
 This library provides standard VAT rate data for information. It is not tax advice.
 

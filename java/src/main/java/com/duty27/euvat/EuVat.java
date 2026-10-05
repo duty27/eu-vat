@@ -110,6 +110,8 @@ public final class EuVat {
             throw new UnknownCountryException(null);
         }
         String normalized = code.trim().toUpperCase(Locale.ROOT); // ROOT: the Turkish dotless-i rule must not apply
+        // The EU writes Greece as EL (from Ελλάδα, its name in Greek), not the ISO code GR: EL is the prefix on Greek
+        // VAT numbers and in VIES, and the code in the EU's own style guide, so EL is what every method returns.
         if (normalized.equals("GR")) {
             normalized = "EL";
         }

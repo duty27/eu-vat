@@ -129,6 +129,8 @@ def normalize_country(code: object) -> str:
     if not isinstance(code, str):
         raise UnknownCountryError(code)
     normalized = code.strip().upper()
+    # The EU writes Greece as EL (from Ελλάδα, its name in Greek), not the ISO code GR: EL is the prefix on Greek VAT
+    # numbers and in VIES, and the code in the EU's own style guide, so EL is what every function returns.
     if normalized == "GR":
         normalized = "EL"
     if normalized not in _COUNTRIES:

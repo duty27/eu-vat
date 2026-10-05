@@ -73,6 +73,8 @@ const BY_CODE = new Map(DATA.map(c => [c.code as string, c]));
 export function normalizeCountry(code: unknown): string {
   if (typeof code !== 'string') throw new UnknownCountryError(code);
   let c = code.trim().toUpperCase();
+  // The EU writes Greece as EL (from Ελλάδα, its name in Greek), not the ISO code GR: EL is the prefix on Greek VAT
+  // numbers and in VIES, and the code in the EU's own style guide, so EL is what every function returns.
   if (c === 'GR') c = 'EL';
   if (!BY_CODE.has(c)) throw new UnknownCountryError(code);
   return c;
