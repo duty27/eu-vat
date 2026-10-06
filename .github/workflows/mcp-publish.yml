@@ -1,6 +1,7 @@
 name: MCP publish
 
-# Publishes @duty27/eu-vat-mcp to npm, then lists it in the MCP Registry, when a tag like mcp-v0.1.1 is pushed (git tag mcp-v0.1.1 && git push --tags;
+# Publishes @duty27/eu-vat-mcp to npm, then lists it in the MCP Registry and publishes a GitHub Release (which Glama
+# rebuilds from), when a tag like mcp-v0.1.1 is pushed (git tag mcp-v0.1.1 && git push --tags;
 # the mcp- prefix leaves room for the node-, python- and java- releases from the same repo), using npm "trusted
 # publishing": GitHub proves to npm which repository and workflow this is, so there is NO npm token stored
 # anywhere, and the package page shows a verified "built from this commit" provenance badge.
@@ -56,3 +57,20 @@ jobs:
       contents: read
       id-token: write
     uses: ./.github/workflows/mcp-registry.yml
+
+  # And publish a GitHub Release for the tag. Glama (glama.ai/mcp/servers/duty27/eu-vat) has Auto-Release on, which
+  # rebuilds and re-checks the server on every GitHub Release, so this keeps Glama on the version npm has.
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release
+    steps:
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#mcp-v}"
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "MCP server $VERSION" \
+            --notes "@duty27/eu-vat-mcp $VERSION: https://www.npmjs.com/package/@duty27/eu-vat-mcp/v/$VERSION (MCP Registry: io.github.duty27/eu-vat)"
